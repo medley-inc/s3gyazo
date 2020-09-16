@@ -14,7 +14,7 @@ RUN echo deb http://us.archive.ubuntu.com/ubuntu/ precise universe multiverse >>
   apt-get -y upgrade && apt-get clean && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/* 
 
 # Install dependencies
-RUN apt-get update && apt-get install -y build-essential zlib1g-dev libyaml-dev libssl-dev libgdbm-dev libreadline-dev libncurses5-dev libffi-dev curl openssh-server redis-server checkinstall libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev sudo python python-docutils python-software-properties nginx logrotate postfix mysql-client libmysqlclient-dev --no-install-recommends
+RUN apt-get update && apt-get install -y build-essential zlib1g-dev libyaml-dev libssl-dev libgdbm-dev libreadline-dev libncurses5-dev libffi-dev curl openssh-server redis-server checkinstall libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev sudo python python-docutils python-software-properties nginx logrotate postfix mysql-client libmysqlclient-dev wget --no-install-recommends
 
 # Install Git
 RUN add-apt-repository -y ppa:git-core/ppa;\
@@ -24,13 +24,15 @@ RUN add-apt-repository -y ppa:git-core/ppa;\
 # Install Ruby
 RUN mkdir /tmp/ruby;\
   cd /tmp/ruby;\
-  curl ftp://ftp.ruby-lang.org/pub/ruby/2.2/ruby-${RubyVersion}.tar.gz | tar xz;\
+  wget http://ftp.ruby-lang.org/pub/ruby/2.2/ruby-${RubyVersion}.tar.gz;\
+  tar -zxvf ruby-${RubyVersion}.tar.gz;\
   cd ruby-${RubyVersion};\
   chmod +x configure;\
   ./configure --disable-install-rdoc;\
   make;\
-  make install;\
-  gem install bundler --no-ri --no-rdoc
+  make install
+
+RUN gem install bundler -v '1.10.5' --no-ri --no-rdoc
 
 # Create a user
 RUN adduser --disabled-login --gecos 'S3Gyazo' gyazo
@@ -39,6 +41,8 @@ RUN apt-get install -y vim w3m wget zsh tmux lv && adduser gyazo sudo
 ADD sinatra_app /home/gyazo
 RUN cd /home/gyazo && bundle install 
 RUN mkdir /home/gyazo/import
+
+ADD run.sh /home/gyazo/import/run.sh
 
 # RUN cd /home/gyazo && chown -R gyazo:gyazo . && su gyazo -c "bundle install"
 

@@ -1,7 +1,7 @@
 # S3gyazo -- a gyazo server with s3 and docker
 
 ## Installation
-349
+- [gyazo環境構築方法](./docs/installation.md)
 
 ## Thanks to
 
